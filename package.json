@@ -1,0 +1,27 @@
+{
+  "name": "gateway-service",
+  "version": "1.0.0",
+  "description": "gateway serivce for testEcom",
+  "homepage": "https://github.com/KennethRoger/testEcom-gateway-service#readme",
+  "bugs": {
+    "url": "https://github.com/KennethRoger/testEcom-gateway-service/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KennethRoger/testEcom-gateway-service.git"
+  },
+  "license": "ISC",
+  "author": "Kenneth Roger",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "http-proxy-middleware": "^3.0.5",
+    "morgan": "^1.10.1"
+  }
+}
