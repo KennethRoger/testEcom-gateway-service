@@ -1,4 +1,6 @@
 const express = require("express");
+const morgan = require("morgan");
+
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV || "development"}`,
 });
@@ -24,38 +26,39 @@ const SERVICES = {
   order: process.env.ORDER_SERVICE,
 };
 
-// USER
-app.use("/api/users/login", createProxy(SERVICES.user));
-app.use("/api/users/register", createProxy(SERVICES.user));
-app.use("/api/admin/register", createProxy(SERVICES.user));
+// LOGGING
+app.use(morgan("combined"));
 
-app.use("/api/users", authorize(["admin"]), createProxy(SERVICES.user));
-app.use(
-  "/api/users/",
-  authorize(["user", "admin"]),
-  createProxy(SERVICES.user)
+// USER
+app.post("/api/users/login", createProxy(SERVICES.user));
+app.post("/api/users/register", createProxy(SERVICES.user));
+app.post(
+  "/api/admin/register",
+  createProxy(SERVICES.user, { "^/api": "/users" })
 );
+
+app.get("/api/users", authorize(["admin"]), createProxy(SERVICES.user));
+
+app.use(
+  "/api/users",
+  authorize(["user", "admin"]),
+  createProxy(SERVICES.user, { "": "/users" })
+);
+
+app.delete("/api/users/:id", authorize(["admin"]), createProxy(SERVICES.user));
 
 // ORDER
+
+app.get("/api/order", authorize(["admin"]), createProxy(SERVICES.order));
+
 app.use(
   "/api/order",
-  (req, res, next) => {
-    if (req.method === "GET") {
-      return authorize(["admin"])(req, res, next);
-    }
-    return authorize(["user", "admin"])(req, res, next);
-  },
-  createProxy(SERVICES.order)
-);
-
-app.use(
-  "/api/order/",
   authorize(["user", "admin"]),
-  createProxy(SERVICES.order)
+  createProxy(SERVICES.order, { "": "/order" })
 );
 
-app.use(
-  "/api/order/status/",
+app.post(
+  "/api/order/status/:id",
   authorize(["admin"]),
   createProxy(SERVICES.order)
 );
