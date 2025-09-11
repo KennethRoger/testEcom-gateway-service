@@ -24,6 +24,7 @@ app.use(limiter);
 const SERVICES = {
   user: process.env.USER_SERVICE,
   order: process.env.ORDER_SERVICE,
+  payment: process.env.PAYMENT_SERVICE,
 };
 
 // LOGGING
@@ -61,6 +62,22 @@ app.post(
   "/api/order/status/:id",
   authorize(["admin"]),
   createProxy(SERVICES.order)
+);
+
+// PAYMENT
+
+app.post(
+  "/api/payment/:orderId",
+  authorize(["admin", "user"]),
+  createProxy(SERVICES.payment)
+);
+
+app.get("/api/payment", authorize(["admin"]), createProxy(SERVICES.payment));
+
+app.get(
+  "/api/payment/:paymentId",
+  authorize(["admin", "user"]),
+  createProxy(SERVICES.payment)
 );
 
 app.use(errorHandler);
